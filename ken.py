@@ -420,68 +420,182 @@ async def doikc(interaction: discord.Interaction, amount: int):
     await interaction.response.send_message(embed=embed)
 
 
+# --- LỚP TẠO NÚT BẤM XỬ LÝ NẠP THẺ ---
+class NapTheView(discord.ui.View):
+
+  def __init__(self, user_id: int, loai_the: str, menh_gia: str):
+    super().__init__(timeout=None)  # Giữ nút bấm luôn hoạt động
+    self.user_id = user_id
+    self.loai_the = loai_the
+    self.menh_gia = menh_gia
+
+  # Nút Chấp nhận
+  @discord.ui.button(
+      label="Chấp nhận (Thành công)",
+      style=discord.ButtonStyle.success,
+      emoji="✅",
+  )
+  async def approve(
+      self, interaction: discord.Interaction, button: discord.ui.Button
+  ):
+    # 1. Khóa tất cả nút bấm lại để không ai bấm lại được nữa
+    for child in self.children:
+      child.disabled = True
+
+    # 2. Cập nhật Embed trong kênh Log báo đã duyệt
+    embed = interaction.message.embeds[0]
+    embed.color = discord.Color.blue()
+    embed.add_field(
+        name="📌 Trạng thái",
+        value=f"✅ **Đã duyệt bởi {interaction.user.mention}**",
+        inline=False,
+    )
+    await interaction.response.edit_message(embed=embed, view=self)
+
+    # 3. Gửi DM riêng cho người nạp
+    try:
+      target_user = await interaction.client.fetch_user(self.user_id)
+      if target_user:
+        dm_embed = discord.Embed(
+            title="🎉 NẠP THẺ THÀNH CÔNG",
+            description=(
+                f"Yêu cầu nạp thẻ **{self.loai_the}** mệnh giá"
+                f" **{self.menh_gia}** của bạn đã được Admin xác nhận thành"
+                " công!\nKim cương/Quà đã được cộng vào tài khoản."
+            ),
+            color=discord.Color.green(),
+        )
+        await target_user.send(embed=dm_embed)
+    except Exception as e:
+      print(f"Không thể gửi DM cho user {self.user_id}: {e}")
+
+  # Nút Thất bại
+  @discord.ui.button(
+      label="Thất bại (Sai thông tin)",
+      style=discord.ButtonStyle.danger,
+      emoji="❌",
+  )
+  async def reject(
+      self, interaction: discord.Interaction, button: discord.ui.Button
+  ):
+    # 1. Khóa tất cả nút bấm lại
+    for child in self.children:
+      child.disabled = True
+
+    # 2. Cập nhật Embed trong kênh Log báo từ chối
+    embed = interaction.message.embeds[0]
+    embed.color = discord.Color.red()
+    embed.add_field(
+        name="📌 Trạng thái",
+        value=f"❌ **Từ chối bởi {interaction.user.mention}**",
+        inline=False,
+    )
+    await interaction.response.edit_message(embed=embed, view=self)
+
+    # 3. Gửi DM riêng cho người nạp
+    try:
+      target_user = await interaction.client.fetch_user(self.user_id)
+      if target_user:
+        dm_embed = discord.Embed(
+            title="❌ NẠP THẺ THẤT BẠI",
+            description=(
+                f"Yêu cầu nạp thẻ **{self.loai_the}** mệnh giá"
+                f" **{self.menh_gia}** bị từ chối.\n**Lý do:** Thẻ lỗi hoặc sai"
+                " thông tin Seri / Mã thẻ."
+            ),
+            color=discord.Color.red(),
+        )
+        await target_user.send(embed=dm_embed)
+    except Exception as e:
+      print(f"Không thể gửi DM cho user {self.user_id}: {e}")
+
+
+# --- LỆNH /NAPTIEN CỦA BẠN ---
 @bot.tree.command(name="naptien", description="Gửi yêu cầu nạp thẻ cho Admin")
 @app_commands.describe(
     loai_the="Chọn nhà mạng (Viettel, Mobi, Vina...)",
     menh_gia="Chọn mệnh giá thẻ nạp",
     seri="Số Seri của thẻ",
-    ma_the="Mã số nạp tiền sau lớp cào"
+    ma_the="Mã số nạp tiền sau lớp cào",
 )
-# Danh sách nhà mạng Việt Nam
-@app_commands.choices(loai_the=[
-    app_commands.Choice(name="Viettel", value="Viettel"),
-    app_commands.Choice(name="Mobifone", value="Mobifone"),
-    app_commands.Choice(name="Vinaphone", value="Vinaphone"),
-    app_commands.Choice(name="Zing (VNG)", value="Zing"),
-    app_commands.Choice(name="Gate", value="Gate"),
-    app_commands.Choice(name="Garena", value="Garena"),
-])
-# Danh sách mệnh giá
-@app_commands.choices(menh_gia=[
-    app_commands.Choice(name="20,000 VND", value="20k"),
-    app_commands.Choice(name="50,000 VND", value="50k"),
-    app_commands.Choice(name="100,000 VND", value="100k"),
-    app_commands.Choice(name="200,000 VND", value="200k"),
-    app_commands.Choice(name="500,000 VND", value="500k"),
-])
+@app_commands.choices(
+    loai_the=[
+        app_commands.Choice(name="Viettel", value="Viettel"),
+        app_commands.Choice(name="Mobifone", value="Mobifone"),
+        app_commands.Choice(name="Vinaphone", value="Vinaphone"),
+        app_commands.Choice(name="Zing (VNG)", value="Zing"),
+        app_commands.Choice(name="Gate", value="Gate"),
+        app_commands.Choice(name="Garena", value="Garena"),
+    ]
+)
+@app_commands.choices(
+    menh_gia=[
+        app_commands.Choice(name="20,000 VND", value="20k"),
+        app_commands.Choice(name="50,000 VND", value="50k"),
+        app_commands.Choice(name="100,000 VND", value="100k"),
+        app_commands.Choice(name="200,000 VND", value="200k"),
+        app_commands.Choice(name="500,000 VND", value="500k"),
+    ]
+)
 async def naptien(
-    interaction: discord.Interaction, 
-    loai_the: app_commands.Choice[str], 
-    menh_gia: app_commands.Choice[str], 
-    seri: str, 
-    ma_the: str
+    interaction: discord.Interaction,
+    loai_the: app_commands.Choice[str],
+    menh_gia: app_commands.Choice[str],
+    seri: str,
+    ma_the: str,
 ):
-    # 1. Phản hồi nhanh cho người dùng
-    await interaction.response.send_message(
-        f"✅ Đã gửi yêu cầu nạp thẻ **{loai_the.name}** mệnh giá **{menh_gia.name}**! Admin sẽ sớm kiểm tra và duyệt cho bạn.", 
-        ephemeral=True
+  # 1. Phản hồi ẩn cho người dùng
+  await interaction.response.send_message(
+      f"✅ Đã gửi yêu cầu nạp thẻ **{loai_the.name}** mệnh giá **{menh_gia.name}**!"
+      " Admin sẽ sớm kiểm tra và duyệt cho bạn.",
+      ephemeral=True,
+  )
+
+  # 2. Lấy kênh Log
+  log_channel = interaction.guild.get_channel(ID_LOG_NAP_CARD)
+
+  if not log_channel:
+    print(
+        "❌ Cảnh báo: Chưa cài đặt ID kênh Log nạp thẻ (ID hiện tại:"
+        f" {ID_LOG_NAP_CARD})"
     )
+    return
 
-    # 2. Lấy kênh Log (Đảm bảo ID_LOG_NAP_CARD đã được định nghĩa ở đầu file)
-    log_channel = interaction.guild.get_channel(ID_LOG_NAP_CARD)
-    
-    if not log_channel:
-        print(f"❌ Cảnh báo: Chưa cài đặt ID kênh Log nạp thẻ (ID hiện tại: {ID_LOG_NAP_CARD})")
-        return
+  # 3. Tạo Embed gửi cho Admin
+  embed = discord.Embed(
+      title="💳 CÓ YÊU CẦU NẠP THẺ MỚI",
+      color=discord.Color.gold(),
+      timestamp=discord.utils.utcnow(),
+  )
 
-    # 3. Tạo Embed gửi cho Admin
-    embed = discord.Embed(
-        title="💳 CÓ YÊU CẦU NẠP THẺ MỚI",
-        color=discord.Color.green(),
-        timestamp=discord.utils.utcnow()
-    )
-    
-    embed.add_field(name="👤 Người gửi", value=f"{interaction.user.mention}\nID: `{interaction.user.id}`", inline=False)
-    embed.add_field(name="📶 Nhà mạng", value=f"**{loai_the.name}**", inline=True)
-    embed.add_field(name="💰 Mệnh giá", value=f"**{menh_gia.name}**", inline=True)
-    embed.add_field(name="🔢 Số Seri", value=f"`{seri}`", inline=False)
-    embed.add_field(name="🔑 Mã thẻ (Bấm để xem)", value=f"||{ma_the}||", inline=False)
-    
-    embed.set_thumbnail(url=interaction.user.display_avatar.url)
-    embed.set_footer(text="Sau khi check thẻ, hãy dùng /addkimcuong để cộng quà!")
+  embed.add_field(
+      name="👤 Người gửi",
+      value=f"{interaction.user.mention}\nID: `{interaction.user.id}`",
+      inline=False,
+  )
+  embed.add_field(
+      name="📶 Nhà mạng", value=f"**{loai_the.name}**", inline=True
+  )
+  embed.add_field(
+      name="💰 Mệnh giá", value=f"**{menh_gia.name}**", inline=True
+  )
+  embed.add_field(name="🔢 Số Seri", value=f"`{seri}`", inline=False)
+  embed.add_field(
+      name="🔑 Mã thẻ (Bấm để xem)", value=f"||{ma_the}||", inline=False
+  )
 
-    # Gửi vào kênh log
-    await log_channel.send(content="🔔 **Thông báo từ hệ thống nạp thẻ:**", embed=embed)
+  embed.set_thumbnail(url=interaction.user.display_avatar.url)
+  embed.set_footer(text="Bấm nút bên dưới để chấp nhận hoặc từ chối đơn này")
+
+  # 4. Gửi vào kênh log kèm 2 Nút Bấm
+  view = NapTheView(
+      user_id=interaction.user.id,
+      loai_the=loai_the.name,
+      menh_gia=menh_gia.name,
+  )
+  await log_channel.send(
+      content="🔔 **Thông báo từ hệ thống nạp thẻ:**", embed=embed, view=view
+  )
 
 # Ví dụ về hàm lưu dữ liệu của bạn (hãy đảm bảo nó trông như thế này)
 def save_all():
