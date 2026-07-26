@@ -1321,6 +1321,9 @@ async def rank(interaction: discord.Interaction):
 @bot.tree.command(name="info", description="Xem thông tin chi tiết của bản thân hoặc người khác")
 @app_commands.describe(member="Chọn người cần xem thông tin")
 async def info(interaction: discord.Interaction, member: discord.Member = None):
+    # Hoãn phản hồi ngay lập tức để tránh lỗi Unknown interaction khi xử lý lâu
+    await interaction.response.defer()
+
     target = member or interaction.user
     uid = str(target.id)
 
@@ -1348,7 +1351,7 @@ async def info(interaction: discord.Interaction, member: discord.Member = None):
     embed.add_field(name="✨ Kinh nghiệm", value=f"`{xp:,}/{needed:,}` XP", inline=True)
     embed.add_field(name=f"🎭 Vai trò ({len(roles)})", value=roles_str, inline=False)
 
-    await interaction.response.send_message(embed=embed)
+    await interaction.followup.send(embed=embed)
 
 @bot.tree.command(name="money", description="Xem số tiền")
 async def money(interaction: discord.Interaction):
@@ -1500,13 +1503,10 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Lỗi đồng bộ lệnh: {e}")
 
-# Đặt Token của bot vào đây khi khởi chạy
-# bot.run("YOUR_BOT_TOKEN")
-
-
-import os
-
 # Lấy token từ biến môi trường
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-bot.run(TOKEN)
+if TOKEN:
+    bot.run(TOKEN)
+else:
+    print("❌ Chưa cấu hình DISCORD_TOKEN trong môi trường!")
