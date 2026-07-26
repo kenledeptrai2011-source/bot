@@ -2568,7 +2568,7 @@ async def invite(interaction: discord.Interaction):
 @bot.event
 async def on_ready():
     print(f"✅ Bot {bot.user} đã online thành công!")
-    asyncio.create_task(terminal_control())
+
 
 import os
 
