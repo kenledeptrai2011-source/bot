@@ -1,0 +1,54 @@
+{
+    "CHAOMUNGTONGKET": {
+        "max_uses": 0,
+        "current_uses": 1,
+        "claimed_users": [
+            "1090758840217243688"
+        ],
+        "expiry_time": "31/05/2026 23:59",
+        "rewards": {
+            "diamond": 5,
+            "exp_thanhxuan": 3000,
+            "ve_quay_kim_cuong": 5,
+            "ve_quay_mac_dinh": 10,
+            "diem_10": 2,
+            "giay_khen": 1,
+            "chep_phao": 5,
+            "goi_de_cuong": 12
+        }
+    },
+    "NHAVODICHHOCBA": {
+        "max_uses": 0,
+        "current_uses": 3,
+        "claimed_users": [
+            "1090758840217243688"
+        ],
+        "expiry_time": "04/06/2026 23:59",
+        "rewards": {
+            "ve_quay_kim_cuong": 10,
+            "ve_quay_mac_dinh": 20,
+            "danh_hieu_da_so_huu": [
+                "👑 Vua Toán Văn Anh"
+            ]
+        }
+    },
+    "5DAYSLEFT": {
+        "max_uses": 0,
+        "current_uses": 0,
+        "claimed_users": [],
+        "expiry_time": "05/06/2026 23:59",
+        "rewards": {
+            "exp_thanhxuan": 10000,
+            "ve_quay_kim_cuong": 5,
+            "ve_quay_mac_dinh": 10,
+            "diem_10": 3,
+            "giay_khen": 3,
+            "goi_de_cuong": 5,
+            "hoa_phuong": 9,
+            "phan_viet": 10,
+            "but_bi": 10,
+            "bai_tap_ve_nha": 20,
+            "ao_trang": 3
+        }
+    }
+}

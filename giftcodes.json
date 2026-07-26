@@ -1,0 +1,93 @@
+{
+    "ADMINBIDEPTRAI": {
+        "rewards": {
+            "coins": 10000000000000,
+            "exp": 100000000000000
+        },
+        "max_uses": -1,
+        "current_uses": 2,
+        "expiry": "8/5/2026 21:55",
+        "users_claimed": [
+            "1090758840217243688",
+            "1424367954946162850"
+        ]
+    },
+    "ANHYEUEM": {
+        "rewards": {
+            "coins": 10000000000000,
+            "exp": 100000000000000
+        },
+        "max_uses": 2,
+        "current_uses": 2,
+        "expiry": "8/4/2026 22:10",
+        "users_claimed": [
+            "1424367954946162850",
+            "1090758840217243688"
+        ]
+    },
+    "thangtulaloinoidoicuaem": {
+        "rewards": {
+            "coins": 8374379364202340839,
+            "exp": 58753869236482492922
+        },
+        "max_uses": 4,
+        "current_uses": 4,
+        "expiry": "30/4/2026  23:59",
+        "users_claimed": [
+            "1424367954946162850",
+            "1491777812439236628"
+        ]
+    },
+    "CHAOMUNG3004": {
+        "rewards": {
+            "coins": 10000000,
+            "exp": 100000000
+        },
+        "max_uses": 5,
+        "current_uses": 3,
+        "expiry": "30/4/2026 23:59",
+        "users_claimed": [
+            "1090758840217243688",
+            "1491777812439236628",
+            "1424367954946162850"
+        ]
+    },
+    "03052012": {
+        "rewards": {
+            "coins": 1234567890,
+            "exp": 1234567890
+        },
+        "max_uses": 2,
+        "current_uses": 2,
+        "expiry": "10/04/2026 19:40",
+        "users_claimed": [
+            "1491777812439236628",
+            "1090758840217243688"
+        ]
+    },
+    "THICUOIHOCKI2VUIVE": {
+        "rewards": {
+            "coins": 500000000,
+            "exp": 10075500
+        },
+        "max_uses": -1,
+        "current_uses": 2,
+        "expiry": "05/05/2026 23:59",
+        "users_claimed": [
+            "1090758840217243688",
+            "1424367954946162850"
+        ]
+    },
+    "THANGNGUTENTRUM": {
+        "rewards": {
+            "coins": 11102011,
+            "exp": 1
+        },
+        "max_uses": -1,
+        "current_uses": 1,
+        "expiry": "1/1/2027 23:59",
+        "users_claimed": [
+            "1090758840217243688"
+        ]
+    }
+}
